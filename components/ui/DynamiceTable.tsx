@@ -198,6 +198,7 @@ export const EmployeeTable = ({ tableHeaders, tableData, loading }: TableProps) 
 
 export const LeaveRequestTable = ({ tableHeaders, tableData, loading, onView }: TableProps) => {
     const colSpan = tableHeaders?.length;
+    console.log(tableData)
     return (
         <Table>
             <TableHeaderData headers={tableHeaders} />
@@ -226,9 +227,9 @@ export const LeaveRequestTable = ({ tableHeaders, tableData, loading, onView }: 
                             tableData?.map((item, index) => (
                                 <TableRow key={index}>
                                     <TableCell className="font-medium">{item.id}</TableCell>
-                                    <TableCell>{item.userName}</TableCell>
+                                    <TableCell>{item?.employeeId}</TableCell>
                                     <TableCell>{item.leaveType}</TableCell>
-                                    <TableCell>{item.maxDays}</TableCell>
+                                    <TableCell>{item.totalDays}</TableCell>
                                     <TableCell className="">{new Date(item.startDate).toLocaleDateString()}</TableCell>
                                     <TableCell className="">{new Date(item.endDate).toLocaleDateString()}</TableCell>
                                     <TableCell>
@@ -244,13 +245,13 @@ export const LeaveRequestTable = ({ tableHeaders, tableData, loading, onView }: 
                                             >
                                                 <Eye className="size-4" />
                                             </Button>
-                                            {item.status === "pending" && (
+                                            {item.status === "Pending" && (
                                                 <>
                                                     <Button
                                                         variant="ghost"
                                                         size="icon-sm"
                                                         className="text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
-                                                        // onClick={() => onApprove(request.id)}
+                                                        onClick={() => onView?.(item)}
                                                         aria-label="Approve"
                                                     >
                                                         <Check className="size-4" />
@@ -259,7 +260,7 @@ export const LeaveRequestTable = ({ tableHeaders, tableData, loading, onView }: 
                                                         variant="ghost"
                                                         size="icon-sm"
                                                         className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
-                                                        // onClick={() => openReview(request)}
+                                                        onClick={() => onView?.(item)}
                                                         aria-label="Reject"
                                                     >
                                                         <X className="size-4" />

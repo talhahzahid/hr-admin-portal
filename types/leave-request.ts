@@ -1,4 +1,4 @@
-export type LeaveRequestStatus = "pending" | "approved" | "rejected";
+export type LeaveRequestStatus = "Pending" | "Approved" | "Rejected";
 
 export type LeaveType =
   | "Annual Leave"

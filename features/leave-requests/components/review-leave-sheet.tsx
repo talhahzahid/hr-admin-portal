@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Mail, User } from "lucide-react";
+import { Calendar, FileText, Hash, User } from "lucide-react";
+import { toast } from "sonner";
 
+import { leaveRequest } from "@/api/leave";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -13,45 +15,34 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { LeaveStatusBadge } from "@/features/leave-requests/components/leave-status-badge";
-import type { LeaveRequest } from "@/types/leave-request";
+import type { LeaveRequests } from "@/interface/leave-request";
+import { getAuthEmployee } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import { updateLeaveStatus } from "@/api/attendance";
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("en-US", {
+function formatDate(dateStr?: string) {
+  if (!dateStr) return "—";
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return dateStr;
+  return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
   });
 }
 
-// type ReviewLeaveSheetProps = {
-//   request: LeaveRequest | null;
-//   open: boolean;
-//   onOpenChange: (open: boolean) => void;
-//   onApprove: (id: string) => void;
-//   onReject: (id: string, reason: string) => void;
-// };
-
 type ReviewLeaveSheetProps = {
-  request: LeaveRequest | null;
+  request: LeaveRequests | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onApprove: (id: string) => void;
-  onReject: (id: string, reason: string) => void;
   onRefresh: () => Promise<void>;
-
 };
 
 export function ReviewLeaveSheet({
   request,
   open,
   onOpenChange,
-  onApprove,
-  onReject,
-  onRefresh
+  onRefresh,
 }: ReviewLeaveSheetProps) {
-  console.log(request)
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectForm, setShowRejectForm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -62,58 +53,78 @@ export function ReviewLeaveSheet({
     onOpenChange(false);
   };
 
-
-  const handleReject = async () => {
-    if (!request || rejectReason.trim().length < 5) return;
-
-    try {
-      setLoading(true);
-
-      await updateLeaveStatus(
-        String(request?.id),
-        Number(request?.userId),
-        "rejected"
-      );
-
-      onReject(request.id, rejectReason.trim());
-      handleClose();
-    } catch (error) {
-      console.error("Reject Error:", error);
-    } finally {
-      setLoading(false);
+  const getApproverId = () => {
+    const employee = getAuthEmployee();
+    if (!employee?.id) {
+      toast.error("Unable to identify logged-in employee. Please login again.");
+      return null;
     }
+    return employee.id;
   };
 
   const handleApprove = async () => {
     if (!request) return;
 
+    const approvedBy = getApproverId();
+    if (!approvedBy) return;
+
     try {
       setLoading(true);
+      const result = await leaveRequest({
+        id: request.id,
+        status: "approve",
+        approvedBy,
+      });
 
-      await updateLeaveStatus(
-        request?.id,
-        request?.userId,
-        "approved"
-      );
-      // onApprove(request?.id);
+      if (result?.success === false) {
+        toast.error(result?.message ?? "Failed to approve leave request");
+        return;
+      }
+
+      toast.success(result?.message ?? "Leave request approved");
       await onRefresh();
       handleClose();
-    } catch (error) {
-      console.error("Approve Error:", error);
+    } catch (error: any) {
+      toast.error(error?.message ?? "Failed to approve leave request");
     } finally {
       setLoading(false);
     }
   };
 
-  // const handleApprove = () => {
-  //   if (!request) return;
-  //   onApprove(request.id);
-  //   handleClose();
-  // };
+  const handleReject = async () => {
+    if (!request || rejectReason.trim().length < 5) return;
+
+    const approvedBy = getApproverId();
+    if (!approvedBy) return;
+
+    try {
+      setLoading(true);
+      const result = await leaveRequest({
+        id: request.id,
+        status: "reject",
+        approvedBy,
+        rejectionReason: rejectReason.trim(),
+      });
+
+      if (result?.success === false) {
+        toast.error(result?.message ?? "Failed to reject leave request");
+        return;
+      }
+
+      toast.success(result?.message ?? "Leave request rejected");
+      await onRefresh();
+      handleClose();
+    } catch (error: any) {
+      toast.error(error?.message ?? "Failed to reject leave request");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!request) return null;
 
-  const isPending = request.status === "pending";
+  const isPending = request.status === "Pending";
+  const totalDays = Number(request.totalDays);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -121,7 +132,7 @@ export function ReviewLeaveSheet({
         <SheetHeader className="border-b border-slate-100 px-6 py-5 dark:border-slate-800">
           <SheetTitle className="text-left">Leave Request Details</SheetTitle>
           <SheetDescription className="text-left">
-            Request ID: {request?.userId}
+            Request ID: #{request.id}
           </SheetDescription>
         </SheetHeader>
 
@@ -129,27 +140,28 @@ export function ReviewLeaveSheet({
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-lg font-semibold text-slate-900 dark:text-slate-50">
-                {request?.userName}
+                Employee #{request.employeeId}
               </p>
-              <p className="text-sm text-slate-500">{request?.department}</p>
+              <p className="text-sm text-slate-500">{request.leaveType}</p>
             </div>
-            <LeaveStatusBadge status={request?.status} />
+            <LeaveStatusBadge status={request.status} />
           </div>
 
           <dl className="grid gap-3 text-sm">
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <User className="size-4 shrink-0" />
-              <span>{request?.userId}</span>
+              <span>Employee ID: {request.employeeId}</span>
             </div>
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-              <Mail className="size-4 shrink-0" />
-              <span>{request?.email || "-"}</span>
+              <Hash className="size-4 shrink-0" />
+              <span>Session: {request.session || "—"}</span>
             </div>
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <Calendar className="size-4 shrink-0" />
               <span>
-                {formatDate(request?.startDate)} — {formatDate(request?.endDate)} (
-                {request?.maxDays} {request?.maxDays === 1 ? "day" : "days"})
+                {formatDate(request.startDate)} — {formatDate(request.endDate)} (
+                {request.totalDays}{" "}
+                {totalDays === 1 ? "day" : "days"})
               </span>
             </div>
           </dl>
@@ -159,20 +171,21 @@ export function ReviewLeaveSheet({
               Leave type
             </p>
             <p className="mt-1 font-medium text-slate-900 dark:text-slate-100">
-              {request?.leaveType}
+              {request.leaveType}
             </p>
           </div>
 
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <p className="mb-2 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-slate-500">
+              <FileText className="size-3.5" />
               Reason
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-              {request?.leaveDescription}
+            <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+              {request.reason || "—"}
             </p>
           </div>
 
-          {/* {request.rejectionReason && (
+          {request.rejectionReason ? (
             <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 dark:border-rose-900/50 dark:bg-rose-950/30">
               <p className="text-xs font-medium text-rose-700 dark:text-rose-400">
                 Rejection reason
@@ -181,9 +194,9 @@ export function ReviewLeaveSheet({
                 {request.rejectionReason}
               </p>
             </div>
-          )} */}
+          ) : null}
 
-          {showRejectForm && isPending && (
+          {showRejectForm && isPending ? (
             <div className="space-y-2">
               <label
                 htmlFor="reject-reason"
@@ -202,11 +215,17 @@ export function ReviewLeaveSheet({
                   "focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 dark:border-slate-700 dark:bg-slate-950"
                 )}
               />
+              {rejectReason.trim().length > 0 &&
+                rejectReason.trim().length < 5 ? (
+                <p className="text-xs text-rose-500">
+                  Reason must be at least 5 characters
+                </p>
+              ) : null}
             </div>
-          )}
+          ) : null}
         </div>
 
-        {isPending && (
+        {isPending ? (
           <SheetFooter className="flex-col gap-2 border-t border-slate-100 px-6 py-4 sm:flex-col dark:border-slate-800">
             {!showRejectForm ? (
               <>
@@ -217,7 +236,6 @@ export function ReviewLeaveSheet({
                 >
                   {loading ? "Processing..." : "Approve Leave"}
                 </Button>
-
                 <Button
                   variant="destructive"
                   className="w-full"
@@ -237,7 +255,6 @@ export function ReviewLeaveSheet({
                 >
                   {loading ? "Processing..." : "Confirm Rejection"}
                 </Button>
-
                 <Button
                   variant="ghost"
                   className="w-full"
@@ -252,7 +269,7 @@ export function ReviewLeaveSheet({
               </>
             )}
           </SheetFooter>
-        )}
+        ) : null}
       </SheetContent>
     </Sheet>
   );

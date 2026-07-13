@@ -2,18 +2,18 @@ import type { LeaveRequestStatus } from "@/types/leave-request";
 import { cn } from "@/lib/utils";
 
 const statusStyles: Record<LeaveRequestStatus, string> = {
-  pending:
+  Pending:
     "bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-950/40 dark:text-amber-300",
-  approved:
+  Approved:
     "bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-950/40 dark:text-emerald-300",
-  rejected:
+  Rejected:
     "bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-950/40 dark:text-rose-300",
 };
 
 const statusLabels: Record<LeaveRequestStatus, string> = {
-  pending: "Pending",
-  approved: "approved",
-  rejected: "Rejected",
+  Pending: "Pending",
+  Approved: "Approved",
+  Rejected: "Rejected",
 };
 
 export function LeaveStatusBadge({ status }: { status: LeaveRequestStatus }) {
