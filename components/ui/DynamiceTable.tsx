@@ -157,11 +157,13 @@ export const EmployeeTable = ({ tableHeaders, tableData, loading }: TableProps) 
                             tableData?.map((item, index) => (
                                 <TableRow key={index}>
                                     <TableCell className="font-medium">{item.id}</TableCell>
-                                    <TableCell>{item.firstName}</TableCell>
-                                    <TableCell>{item.email}</TableCell>
-                                    <TableCell>{item.designation}</TableCell>
-                                    <TableCell className="">{item.departmentName}</TableCell>
-                                    <TableCell className="">{new Date(item.dateOfJoining).toLocaleDateString()}
+                                    <TableCell>{item?.firstName}</TableCell>
+                                    <TableCell>{item?.lastName}</TableCell>
+                                    <TableCell>{item?.email}</TableCell>
+                                    <TableCell>{item?.designation}</TableCell>
+                                    <TableCell className="">{item?.departmentName}</TableCell>
+                                    <TableCell className="">{item?.roleName}</TableCell>
+                                    <TableCell className="">{new Date(item?.dateOfJoining).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell>
                                         <span

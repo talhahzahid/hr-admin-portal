@@ -1,3 +1,4 @@
+import { EmployeeListResponse } from "@/interface/employee";
 import { api } from "@/lib/api";
 import type { RegisterFormValues } from "@/schemas/register.schema";
 
@@ -23,7 +24,7 @@ export type CreateEmployeeResponse = {
 };
 
 export const createEmployee = async (
-  payload: CreateEmployeePayload
+  payload: CreateEmployeePayload,
 ): Promise<CreateEmployeeResponse> => {
   return api({
     endpoint: "/api/v1/create",
@@ -35,7 +36,7 @@ export const createEmployee = async (
 };
 
 export function toCreateEmployeePayload(
-  values: RegisterFormValues
+  values: RegisterFormValues,
 ): CreateEmployeePayload {
   return {
     firstName: values.firstName.trim(),
@@ -51,3 +52,12 @@ export function toCreateEmployeePayload(
     isActive: values.isActive ?? true,
   };
 }
+
+export const getEmployee = async (
+  page = 1,
+  pageSize = 10,
+): Promise<EmployeeListResponse> => {
+  return api({
+    endpoint: `/api/v1/get-all?page=${page}&pageSize=${pageSize}`,
+  });
+};

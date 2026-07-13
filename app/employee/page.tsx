@@ -1,42 +1,38 @@
 "use client"
+import { getEmployee } from '@/api/employee'
 import { ListViewLayout } from '@/components/shared/list-view-layout'
 import { PageHeader } from '@/components/shared/page-header'
 import { RenderTable } from '@/components/ui/DynamiceTable'
+import { Employees } from '@/interface/employee'
 import { getAuthToken } from '@/lib/auth'
 import React, { useEffect, useState } from 'react'
 
 const headers = [
     "ID",
-    "Employee Name",
+    "First Name",
+    "Last Name",
     "Email",
     "Designation",
     "Department",
+    "Role",
     "Date Of Joining",
     "Status",
 ];
 
 
 const Employee = () => {
-    const [attendanceRecords, setAttendanceRecords] = useState([])
+    const [employee, setEmployee] = useState<Employees[]>([])
     const [loading, setLoading] = useState(false)
 
-
     const getAll = async () => {
+        setLoading(true)
         try {
-            setLoading(true)
-            const token = getAuthToken();
-            const response = await fetch(`http://localhost:8000/users/list`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...(token ? { Authorization: `AMS ${token}` } : {}),
-                    "ngrok-skip-browser-warning": "true",
-                },
-            });
-            console.log("status", response.status);
-            const data = await response.json();
-            setAttendanceRecords(data?.responseData?.users?.data ?? data?.data ?? [])
-            console.log(data);
+            const response = await getEmployee()
+            if (response?.success === true) {
+                setEmployee(response?.data?.employees)
+            } else {
+                console.log(response?.message)
+            }
         } catch (error) {
             console.log(error);
         } finally {
@@ -75,7 +71,7 @@ const Employee = () => {
                     <RenderTable
                         tableName="employeeTable"
                         tableHeaders={headers}
-                        tableData={attendanceRecords}
+                        tableData={employee}
                         loading={loading}
                     />
                 </div>
