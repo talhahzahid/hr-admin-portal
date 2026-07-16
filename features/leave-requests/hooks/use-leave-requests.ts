@@ -1,13 +1,13 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useMemo, useState } from "react";
 
 import { MOCK_LEAVE_REQUESTS } from "@/features/leave-requests/data/mock-leave-requests";
-import type { LeaveRequest, LeaveRequestStatus } from "@/types/leave-request";
+import type { LeaveRequest } from "@/types/leave-request";
 
 export type LeaveRequestFilters = {
   search: string;
-  status: LeaveRequestStatus | "all";
+  status: LeaveRequest["status"] | "all";
   leaveType: string;
 };
 

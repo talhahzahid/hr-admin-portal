@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import {
@@ -83,7 +83,7 @@ export function DashboardScreen() {
       <PageHeader
         label="HR Operations"
         title={`${getGreeting()}, ${adminName}`}
-        description={`${formattedDate} — Monitor workforce attendance, leave balances, and daily operations.`}
+        description={`${formattedDate} ÔÇö Monitor workforce attendance, leave balances, and daily operations.`}
         action={
           <Button asChild className="h-10">
             <Link href="/register">
@@ -97,28 +97,28 @@ export function DashboardScreen() {
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Total Employees"
-          value={loading ? "—" : totalEmployees}
-          hint={`${employees?.active ?? 0} active · ${employees?.inactive ?? 0} inactive`}
+          value={loading ? "ÔÇö" : totalEmployees}
+          hint={`${employees?.active ?? 0} active ┬À ${employees?.inactive ?? 0} inactive`}
           icon={Users}
           accent="blue"
         />
         <StatCard
           label="Present Today"
-          value={loading ? "—" : presentToday}
+          value={loading ? "ÔÇö" : presentToday}
           hint={`${attendanceRate}% attendance rate`}
           icon={CalendarCheck}
           accent="emerald"
         />
         <StatCard
           label="Absent Today"
-          value={loading ? "—" : absentToday}
+          value={loading ? "ÔÇö" : absentToday}
           hint={`${lateToday} marked late`}
           icon={CalendarDays}
           accent="amber"
         />
         <StatCard
           label="Pending Leaves"
-          value={loading ? "—" : pendingLeaves}
+          value={loading ? "ÔÇö" : pendingLeaves}
           hint={`${leaves?.approvedThisMonth ?? 0} approved this month`}
           icon={Clock}
           accent="violet"

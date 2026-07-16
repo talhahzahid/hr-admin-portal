@@ -1,11 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  ArrowLeft,
   CalendarCheck,
   Eye,
   EyeOff,
@@ -21,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { saveAuthSession, type LoginResponse } from "@/lib/auth";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "https://hr-backend-1y26.onrender.com";
 
 export function LoginScreen() {
   const router = useRouter();
@@ -198,15 +196,6 @@ export function LoginScreen() {
                 </Button>
               </div>
 
-              <div className="mt-6 text-center text-sm lg:text-left">
-                <Link
-                  href="/"
-                  className="inline-flex items-center gap-1.5 font-medium text-sky-600 transition hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
-                >
-                  <ArrowLeft className="size-4" />
-                  Back to home
-                </Link>
-              </div>
             </div>
           </main>
         </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Check, Eye, X } from "lucide-react";
@@ -6,7 +6,7 @@ import { Check, Eye, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LeaveStatusBadge } from "@/features/leave-requests/components/leave-status-badge";
 import { ReviewLeaveSheet } from "@/features/leave-requests/components/review-leave-sheet";
-import type { LeaveRequest } from "@/types/leave-request";
+import type { LeaveRequests } from "@/interface/leave-request";
 import { api } from "@/lib/api";
 import { getEmployeeLeave } from "@/api/attendance";
 
@@ -42,10 +42,10 @@ export function LeaveRequestsList({
   onApprove,
   onReject,
 }: LeaveRequestsListProps) {
-  const [selected, setSelected] = useState<LeaveRequest | null>(null);
+  const [selected, setSelected] = useState<LeaveRequests | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [requests, setRequests] = useState<LeaveRequest[]>([]);
-  const openReview = (request: LeaveRequest) => {
+  const [requests, setRequests] = useState<LeaveRequests[]>([]);
+  const openReview = (request: LeaveRequests) => {
     setSelected(request);
     setSheetOpen(true);
   };
@@ -53,30 +53,21 @@ export function LeaveRequestsList({
   const list = async () => {
     try {
       const response = await getEmployeeLeave();
-      const leaves: LeaveRequest[] =
+      const leaves: LeaveRequests[] =
         response?.responseData?.leaves?.data?.map((item: any) => ({
-          id: String(item.id),
-          employeeId: String(item.userId),
-          employeeName: item.userName,
-          department: "",
-          email: "",
+          id: Number(item.id),
+          employeeId: Number(item.userId),
           leaveType: item.leaveType,
           startDate: item.startDate,
           endDate: item.endDate,
-          totalDays: item.maxDays,
-          reason: item.leaveDescription,
-          appliedAt: item.createdAt,
-          status : item?.status,
-          // status:
-          //   item.status === "active"
-          //     ? "approved"
-          //     : item.status === "pending"
-          //       ? "pending"
-          //       : "rejected",
-          userId: item.userId,
-          maxDays: item.maxDays,
-          userName: item.userName,
-          leaveDescription: item.leaveDescription,
+          totalDays: String(item.maxDays ?? item.totalDays ?? ""),
+          session: item.session ?? "",
+          reason: item.leaveDescription ?? item.reason ?? "",
+          status: item.status,
+          approvedBy: item.approvedBy ?? null,
+          rejectionReason: item.rejectionReason ?? null,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt ?? item.createdAt,
         })) || [];
 
       setRequests(leaves);
@@ -119,7 +110,7 @@ export function LeaveRequestsList({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {requests.map((request: LeaveRequest) => (
+              {requests.map((request) => (
                 <tr
                   key={request.id}
                   className="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-900/40"
@@ -127,14 +118,14 @@ export function LeaveRequestsList({
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-semibold text-white">
-                        {getInitials(request?.userName)}
+                        {getInitials(String(request.employeeId))}
                       </span>
                       <div>
                         <p className="font-medium text-slate-900 dark:text-slate-100">
-                          {request?.userName}
+                          Employee #{request.employeeId}
                         </p>
                         <p className="text-xs text-slate-500">
-                          {request?.department} · {request?.userId}
+                          {request.leaveType}
                         </p>
                       </div>
                     </div>
@@ -144,10 +135,11 @@ export function LeaveRequestsList({
                   </td>
                   <td className="px-5 py-4">
                     <p className="text-slate-700 dark:text-slate-300">
-                      {formatDate(request?.startDate)} – {formatDate(request?.endDate)}
+                      {formatDate(request?.startDate)} ÔÇô {formatDate(request?.endDate)}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {request?.totalDays} {request?.totalDays === 1 ? "day" : "days"}
+                      {request.totalDays}{" "}
+                      {Number(request.totalDays) === 1 ? "day" : "days"}
                     </p>
                   </td>
                   <td className="px-5 py-4 text-slate-600 dark:text-slate-400">
@@ -167,13 +159,13 @@ export function LeaveRequestsList({
                       >
                         <Eye className="size-4" />
                       </Button>
-                      {request.status === "pending" && (
+                      {request.status === "Pending" && (
                         <>
                           <Button
                             variant="ghost"
                             size="icon-sm"
                             className="text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
-                            onClick={() => onApprove(request.id)}
+                            onClick={() => onApprove(String(request.id))}
                             aria-label="Approve"
                           >
                             <Check className="size-4" />
@@ -199,7 +191,7 @@ export function LeaveRequestsList({
       </div>
 
       <div className="space-y-3 md:hidden">
-        {requests.map((request: LeaveRequest) => (
+        {requests.map((request) => (
           <article
             key={request.id}
             className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-950"
@@ -207,11 +199,11 @@ export function LeaveRequestsList({
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-semibold text-white">
-                  {getInitials(request?.employeeName)}
+                  {getInitials(String(request.employeeId))}
                 </span>
                 <div>
                   <p className="font-medium text-slate-900 dark:text-slate-100">
-                    {request.employeeName}
+                    Employee #{request.employeeId}
                   </p>
                   <p className="text-xs text-slate-500">{request.leaveType}</p>
                 </div>
@@ -219,7 +211,7 @@ export function LeaveRequestsList({
               <LeaveStatusBadge status={request.status} />
             </div>
             <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
-              {formatDate(request.startDate)} – {formatDate(request.endDate)} ·{" "}
+              {formatDate(request.startDate)} ÔÇô {formatDate(request.endDate)} ┬À{" "}
               {request.totalDays}d
             </p>
             <div className="mt-4 flex gap-2">
@@ -232,12 +224,12 @@ export function LeaveRequestsList({
                 <Eye className="size-3.5" />
                 Details
               </Button>
-              {request.status === "pending" && (
+              {request.status === "Pending" && (
                 <>
                   <Button
                     size="sm"
                     className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-                    onClick={() => onApprove(request.id)}
+                    onClick={() => onApprove(String(request.id))}
                   >
                     Approve
                   </Button>
@@ -260,8 +252,7 @@ export function LeaveRequestsList({
         request={selected}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
-        onApprove={onApprove}
-        onReject={onReject}
+        onRefresh={list}
       />
     </>
   );

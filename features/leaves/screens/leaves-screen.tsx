@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from "react";
 import { RenderTable } from "@/components/shared/data-table/dynamic-table";
 import { ListViewLayout } from "@/components/shared/list-view-layout";

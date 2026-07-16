@@ -1,4 +1,4 @@
-import type { LeaveRequestStatus } from "@/types/leave-request";
+﻿import type { LeaveRequestStatus } from "@/types/leave-request";
 import { cn } from "@/lib/utils";
 
 const statusStyles: Record<LeaveRequestStatus, string> = {
@@ -16,15 +16,29 @@ const statusLabels: Record<LeaveRequestStatus, string> = {
   Rejected: "Rejected",
 };
 
-export function LeaveStatusBadge({ status }: { status: LeaveRequestStatus }) {
+function normalizeStatus(status: string): LeaveRequestStatus {
+  const normalized =
+    status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+  if (
+    normalized === "Pending" ||
+    normalized === "Approved" ||
+    normalized === "Rejected"
+  ) {
+    return normalized;
+  }
+  return "Pending";
+}
+
+export function LeaveStatusBadge({ status }: { status: string }) {
+  const normalizedStatus = normalizeStatus(status);
   return (
     <span
       className={cn(
         "inline-flex rounded-md px-2.5 py-0.5 text-xs font-medium capitalize ring-1 ring-inset",
-        statusStyles[status]
+        statusStyles[normalizedStatus]
       )}
     >
-      {statusLabels[status]}
+      {statusLabels[normalizedStatus]}
     </span>
   );
 }

@@ -1,4 +1,4 @@
-type BreakdownSegment = {
+﻿type BreakdownSegment = {
   label: string;
   value: number;
   percent: number;

@@ -1,6 +1,7 @@
 import { getAuthToken } from "@/lib/auth";
 
-const BASE_URL = "http://localhost:8000";
+// const BASE_URL = "http://localhost:8000";
+const BASE_URL = "https://hr-backend-1y26.onrender.com";
 
 interface ApiRequest {
   endpoint: string;

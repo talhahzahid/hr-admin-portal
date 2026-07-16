@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
 import type { PendingLeave } from "@/api/dashboard";
@@ -25,7 +25,7 @@ function getInitialsColor(name: string) {
 }
 
 function formatDate(value?: string) {
-  if (!value) return "—";
+  if (!value) return "ÔÇö";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString("en-US", {
@@ -113,7 +113,7 @@ export function RecentAttendanceTable({
                             {name || `Employee #${leave.employeeId}`}
                           </p>
                           <p className="truncate text-xs text-slate-500">
-                            {leave.employee?.departmentName || "—"}
+                            {leave.employee?.departmentName || "ÔÇö"}
                           </p>
                         </div>
                       </div>
@@ -122,7 +122,7 @@ export function RecentAttendanceTable({
                       {leave.leaveType}
                     </td>
                     <td className="px-4 py-3.5 text-slate-600 sm:px-6 dark:text-slate-400">
-                      {formatDate(leave.startDate)} – {formatDate(leave.endDate)}
+                      {formatDate(leave.startDate)} ÔÇô {formatDate(leave.endDate)}
                     </td>
                     <td className="px-4 py-3.5 text-right font-medium tabular-nums text-slate-700 sm:px-6 dark:text-slate-300">
                       {leave.totalDays}

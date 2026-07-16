@@ -1,4 +1,4 @@
-type MonthStat = {
+﻿type MonthStat = {
   label: string;
   value: number;
   color: string;

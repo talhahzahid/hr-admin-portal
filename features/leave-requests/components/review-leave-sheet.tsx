@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Calendar, FileText, Hash, User } from "lucide-react";
@@ -20,7 +20,7 @@ import { getAuthEmployee } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 function formatDate(dateStr?: string) {
-  if (!dateStr) return "—";
+  if (!dateStr) return "ÔÇö";
   const date = new Date(dateStr);
   if (Number.isNaN(date.getTime())) return dateStr;
   return date.toLocaleDateString("en-US", {
@@ -154,12 +154,12 @@ export function ReviewLeaveSheet({
             </div>
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <Hash className="size-4 shrink-0" />
-              <span>Session: {request.session || "—"}</span>
+              <span>Session: {request.session || "ÔÇö"}</span>
             </div>
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <Calendar className="size-4 shrink-0" />
               <span>
-                {formatDate(request.startDate)} — {formatDate(request.endDate)} (
+                {formatDate(request.startDate)} ÔÇö {formatDate(request.endDate)} (
                 {request.totalDays}{" "}
                 {totalDays === 1 ? "day" : "days"})
               </span>
@@ -181,7 +181,7 @@ export function ReviewLeaveSheet({
               Reason
             </p>
             <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
-              {request.reason || "—"}
+              {request.reason || "ÔÇö"}
             </p>
           </div>
 

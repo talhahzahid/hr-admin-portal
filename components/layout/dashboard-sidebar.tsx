@@ -88,54 +88,6 @@ export function DashboardSidebar() {
         </SidebarGroup>
 
         <SidebarSeparator className="my-4 bg-white/10" />
-
-        {/* <SidebarGroup className="p-0">
-          <SidebarGroupLabel className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-500 group-data-[collapsible=icon]:sr-only">
-            Administration
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="gap-1">
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  tooltip="User Management"
-                  isActive={isUserManagementRoute(pathname)}
-                  onClick={() => setIsUsersOpen((open) => !open)}
-                  className={cn(menuButtonClass, "justify-between")}
-                >
-                  <span className="flex items-center gap-2">
-                    <Users className="size-4 shrink-0" />
-                    <span>User Management</span>
-                  </span>
-                  <ChevronDown
-                    className={cn(
-                      "size-4 shrink-0 text-zinc-500 transition-transform group-data-[collapsible=icon]:hidden",
-                      isUsersOpen && "rotate-180"
-                    )}
-                  />
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {isUsersOpen && (
-                <div className="mt-0.5 ml-3 flex flex-col gap-0.5 border-l border-white/10 pl-3 group-data-[collapsible=icon]:hidden">
-                  {USER_MANAGEMENT_ITEMS.map((item) => (
-                    <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={pathname === item.href}
-                        className="h-9 rounded-lg px-2.5 text-sm text-zinc-500 hover:bg-white/10 hover:text-white data-active:bg-white/10 data-active:text-white"
-                      >
-                        <Link href={item.href}>
-                          <item.icon className="size-3.5 shrink-0" />
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </div>
-              )}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup> */}
       </SidebarContent>
 
       <SidebarFooter className="shrink-0 border-t border-white/5 px-4 py-4">
