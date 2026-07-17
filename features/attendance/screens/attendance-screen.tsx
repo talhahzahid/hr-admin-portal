@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 const headers = [
   "Employee ID",
-  "Employee Name",
+  // "Employee Name",
   // "Department",
   // "Date",
   "Date",
@@ -77,17 +77,17 @@ export function AttendanceScreen() {
     try {
       setLoading(true)
       const token = getAuthToken();
-      const response = await fetch(`http://localhost:8000/attendance/all`, {
+      const response = await fetch(`https://hr-backend-1y26.onrender.com/api/v3/get-all`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `AMS ${token}` } : {}),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
           "ngrok-skip-browser-warning": "true",
         },
       });
       console.log("status", response.status);
       const data = await response.json();
-      setAttendanceRecords(data?.responseData?.data?.data ?? data?.data ?? [])
+      setAttendanceRecords(data?.data?.attendances ?? data?.data ?? [])
       console.log(data);
     } catch (error) {
       console.log(error);

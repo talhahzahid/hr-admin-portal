@@ -97,14 +97,14 @@ export const AttendanceTable = ({ tableHeaders, tableData, loading }: TableProps
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            tableData.map((item, index) => (
+                            tableData?.map((item, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{item.userId}</TableCell>
-                                    <TableCell className="font-medium">{item.userName || "-"}</TableCell>
+                                    <TableCell>{item.employeeId}</TableCell>
+                                    {/* <TableCell className="font-medium">{item.userName || "-"}</TableCell> */}
                                     <TableCell className="">{item.createdAt || "-"}</TableCell>
                                     <TableCell className="">{item.checkInTime || "-"}</TableCell>
                                     <TableCell className="">{item.checkOutTime || "-"}</TableCell>
-                                    <TableCell className="">{item.workHours || "-"}</TableCell>
+                                    <TableCell className="">{item.workingHours || "-"}</TableCell>
                                     <TableCell className="">{item.status || "-"}</TableCell>
                                 </TableRow>
                             ))
